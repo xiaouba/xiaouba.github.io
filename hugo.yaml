@@ -1,6 +1,6 @@
 baseURL: 'https://xiaouba.github.io/'  # 稍后替换为你的 GitHub 用户名
 languageCode: 'zh-cn'
-title: '小头粑粑的烂笔头'
+title: '小藕粑粑的烂笔头'
 theme: 'PaperMod'  # 使用 PaperMod 主题
 
 # 启用 emoji
@@ -43,7 +43,7 @@ menu:
 params:
   # 网站描述
   description: '分享技术、记录生活'
-  author: '小头粑粑'
+  author: '小藕粑粑'
 
   # 显示阅读时间
   ShowReadingTime: true
