@@ -11,7 +11,8 @@
       "WebFetch(domain:xiaouba.github.io)",
       "Bash(gh api:*)",
       "WebFetch(domain:github.com)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
