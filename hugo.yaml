@@ -8,7 +8,8 @@ enableEmoji: true
 # 启用代码高亮
 pygmentsUseClasses: true
 # 每页文章数
-paginate: 10
+pagination:
+  pagerSize: 10
 
 # 中文设置
 defaultContentLanguage: zh
@@ -71,7 +72,7 @@ params:
 
 # 文章永久链接格式
 permalinks:
-  posts: '/:year/:month/:filename/'
+  posts: '/:year/:month/:contentbasename/'
 
 # Markdown 渲染设置
 markup:
