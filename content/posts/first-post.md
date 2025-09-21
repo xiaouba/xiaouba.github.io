@@ -2,6 +2,7 @@
 title: "我的第一篇博客文章"
 date: 2025-09-21T10:00:00+08:00
 draft: false
+author: "小藕粑粑"
 tags: ["Hugo", "博客", "GitHub Pages"]
 categories: ["技术"]
 description: "使用 Hugo 和 GitHub Pages 搭建个人博客的第一篇文章"
