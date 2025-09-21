@@ -12,7 +12,8 @@
       "Bash(gh api:*)",
       "WebFetch(domain:github.com)",
       "Bash(git ls-tree:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []
