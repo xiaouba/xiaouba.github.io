@@ -1,0 +1,26 @@
+# Hugo 生成的文件
+/public/
+/resources/_gen/
+
+# 临时文件
+.hugo_build.lock
+*.tmp
+*.bak
+
+# IDE 文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS 文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (如果使用 npm 包)
+node_modules/
+
+# 日志文件
+*.log

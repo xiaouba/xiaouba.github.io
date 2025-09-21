@@ -1,0 +1,85 @@
+baseURL: 'https://xiaouba.github.io/'  # 稍后替换为你的 GitHub 用户名
+languageCode: 'zh-cn'
+title: '小头粑粑的烂笔头'
+theme: 'PaperMod'  # 使用 PaperMod 主题
+
+# 启用 emoji
+enableEmoji: true
+# 启用代码高亮
+pygmentsUseClasses: true
+# 每页文章数
+paginate: 10
+
+# 中文设置
+defaultContentLanguage: zh
+hasCJKLanguage: true
+
+# 菜单配置
+menu:
+  main:
+    - identifier: home
+      name: 首页
+      url: /
+      weight: 10
+    - identifier: posts
+      name: 文章
+      url: /posts/
+      weight: 20
+    - identifier: tags
+      name: 标签
+      url: /tags/
+      weight: 30
+    - identifier: categories
+      name: 分类
+      url: /categories/
+      weight: 40
+    - identifier: about
+      name: 关于
+      url: /about/
+      weight: 50
+
+# 参数设置
+params:
+  # 网站描述
+  description: '分享技术、记录生活'
+  author: '小头粑粑'
+
+  # 显示阅读时间
+  ShowReadingTime: true
+  # 显示分享按钮
+  ShowShareButtons: true
+  # 显示文章导航
+  ShowPostNavLinks: true
+  # 显示面包屑导航
+  ShowBreadCrumbs: true
+  # 显示代码复制按钮
+  ShowCodeCopyButtons: true
+  # 显示目录
+  ShowToc: true
+
+  # 主页信息
+  homeInfoParams:
+    Title: "欢迎来到我的博客"
+    Content: "这里记录着我的技术探索和生活感悟"
+
+  # 社交链接
+  socialIcons:
+    - name: github
+      url: "https://github.com/xiaouba"  # 替换为你的 GitHub
+    - name: email
+      url: "mailto:yangjiangwei26@email.com"  # 替换为你的邮箱
+
+# 文章永久链接格式
+permalinks:
+  posts: '/:year/:month/:filename/'
+
+# Markdown 渲染设置
+markup:
+  goldmark:
+    renderer:
+      unsafe: true  # 允许 HTML
+  highlight:
+    codeFences: true
+    guessSyntax: true
+    lineNos: false
+    style: monokai
