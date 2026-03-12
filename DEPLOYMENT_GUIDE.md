@@ -29,7 +29,7 @@ git add .
 git commit -m "Initial commit"
 
 # 添加远程仓库（替换为你的仓库地址）
-git remote add origin https://github.com/yourusername/yourusername.github.io.git
+git remote add origin https://github.com/xiaouba/xiaouba.github.io.git
 
 # 推送到 main 分支
 git branch -M main
@@ -45,26 +45,40 @@ git push -u origin main
 
 ## 步骤五：访问网站
 
-访问 `https://yourusername.github.io` 查看你的博客！
+访问 `https://xiaouba.github.io` 查看你的博客！
 
 ## 后续写文章
 
-### 1. 创建新文章
+### 1. 创建新文章（推荐用 `hugo new`）
 
-创建文件 `content/posts/新文章名.md`：
+使用 Hugo 自带的 `new` 命令，会按 `archetypes/posts.md` 模板在 `content/posts/` 下生成新文章，保证 front matter 格式一致。
 
-```markdown
----
-title: "文章标题"
-date: 2025-09-21T10:00:00+08:00
-draft: false
-tags: ["标签1", "标签2"]
-categories: ["分类"]
-description: "文章描述"
----
+**命令：**
 
-文章内容...
+```bash
+hugo new posts/文章名.md
 ```
+
+- 文章名建议用英文、数字、短横线，例如：`my-first-post`、`学习宣言-20260310`。
+- 生成路径为：`content/posts/文章名.md`。
+
+**模板默认值（来自 `archetypes/posts.md`）：**
+
+- `title`：由文件名自动转成标题（短横线转空格并首字母大写）。
+- `date`：当前时间。
+- `draft: true`：默认为草稿，本地 `hugo server -D` 可见，发布前需改为 `draft: false`。
+- `author`、`categories`、`tags`、`description`、`slug` 等需自行填写。
+
+**示例：**
+
+```bash
+# 创建一篇新文章
+hugo new posts/周报-20260315.md
+```
+
+然后编辑 `content/posts/周报-20260315.md`：补全 tags、categories、description，发布前将 `draft: false`。
+
+**若不用 `hugo new`**，也可手动在 `content/posts/` 下新建 `.md` 文件，front matter 需包含至少：`title`、`date`、`draft`。
 
 ### 2. 本地预览
 
@@ -130,6 +144,20 @@ pubpost "content/posts/文章名.md"
 ```bash
 source ~/.zshrc
 ```
+
+**Windows / PowerShell 用户**：可直接在项目目录下执行 `./publish.sh`，例如：
+
+```powershell
+./publish.sh --file "content/posts/文章名.md" "publish: 文章标题"
+```
+
+若希望有简短命令，可在 PowerShell 配置文件（`$PROFILE`）中添加函数；在 myblog 项目目录下执行时使用：
+
+```powershell
+function pubpost { param($file, $msg = "publish: update posts"); & "./publish.sh" --file $file $msg }
+```
+
+使用示例：`pubpost "content/posts/文章名.md" "publish: 文章标题"`（须在 myblog 根目录下执行）。
 
 #### 4.3 发布前最小检查清单
 
