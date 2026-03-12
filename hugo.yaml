@@ -1,4 +1,4 @@
-baseURL: 'https://xiaouba.github.io/'  # 稍后替换为你的 GitHub 用户名
+baseURL: 'https://xiaouba.github.io/'
 languageCode: 'zh-cn'
 title: '小藕霸霸的烂笔头'
 theme: 'PaperMod'  # 使用 PaperMod 主题
@@ -68,7 +68,7 @@ params:
     - name: github
       url: "https://github.com/xiaouba"  # 替换为你的 GitHub
     - name: email
-      url: "mailto:yangjiangwei26@email.com"  # 替换为你的邮箱
+      url: "mailto:yangjw2011@foxmail.com"  # 替换为你的邮箱
 
 # 文章永久链接格式
 permalinks:

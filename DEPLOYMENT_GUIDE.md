@@ -84,6 +84,116 @@ git push
 
 推送后 GitHub Actions 会自动部署。
 
+### 4. 高效发布（推荐）
+
+为避免发布时遗漏 `draft` 或未来时间，项目已增加自动发布脚本 `publish.sh`，并支持 `pubpost` 一键命令。
+
+#### 4.1 自动发布脚本（`publish.sh`）
+
+脚本能力：
+
+- 自动检查文章 front matter 中的 `draft` 和 `date`
+- 检查通过后自动执行：构建 -> 提交 -> 推送
+- 支持只检查、不推送、按单篇发布
+
+常用用法：
+
+```bash
+# 仅检查某一篇文章（不构建、不提交）
+./publish.sh --check --file "content/posts/文章名.md"
+
+# 发布某一篇文章（检查 + 构建 + commit + push）
+./publish.sh --file "content/posts/文章名.md" "publish: 文章标题"
+
+# 检查 + 构建 + 提交，但不推送
+./publish.sh --no-push --file "content/posts/文章名.md" "publish: 文章标题"
+```
+
+> 注意：如果你不传 `--file`，脚本会优先检查当前改动的文章；若没有改动，再回退检查全部文章。存在其他 `draft: true` 草稿时，可能会阻止发布。
+
+#### 4.2 一键发布命令（`pubpost`）
+
+已在 `~/.zshrc` 中配置函数 `pubpost`，本质上调用 `publish.sh`：
+
+```bash
+pubpost "content/posts/文章名.md" "publish: 文章标题"
+```
+
+若不传提交信息，会使用默认提交信息：
+
+```bash
+pubpost "content/posts/文章名.md"
+```
+
+首次使用或修改 `~/.zshrc` 后，执行：
+
+```bash
+source ~/.zshrc
+```
+
+#### 4.3 发布前最小检查清单
+
+- `draft: false`
+- `date` 不是未来时间
+- 目标分支是 `main`
+- 本地预览正常（可选）
+
+```bash
+hugo server
+```
+
+### 5. GitHub 备份
+
+项目已是 Git 仓库，备份即把本地提交推送到 GitHub 远程。
+
+#### 5.1 确认远程
+
+在项目根目录执行：
+
+```bash
+git remote -v
+```
+
+若有 `origin` 指向你的 GitHub 仓库地址（如 `https://github.com/xiaouba/xiaouba.github.io.git`），说明已连接。
+
+#### 5.2 日常备份（推送到 GitHub）
+
+改完文章或配置后：
+
+```bash
+git add .
+git status                    # 确认要提交的内容
+git commit -m "备份: 简短说明"
+git push origin main
+```
+
+主仓库即你的在线备份。
+
+#### 5.3 双份备份：增加第二个远程
+
+若希望除主仓库外再有一个纯备份仓库（如 `myblog-backup`）：
+
+1. 在 GitHub 新建空仓库，例如 `myblog-backup`（不勾选初始化 README）。
+2. 本地添加备份远程并推送：
+
+```bash
+git remote add backup https://github.com/你的用户名/myblog-backup.git
+git push -u backup main
+```
+
+之后每次可同时推两个远程：
+
+```bash
+git push origin main
+git push backup main
+```
+
+#### 5.4 与发布流程的关系
+
+使用 `publish.sh` 或 `pubpost` 发布时，其内部会执行 `git add`、`commit`、`push origin main`，因此**每次成功发布到 GitHub Pages 的同时，也完成了一次 GitHub 备份**。
+
+---
+
 ## 生成定制格式的 .md 文档
 
 Hugo 通过 **Archetypes（原型）** 控制 `hugo new` 生成的文章 front matter 结构。你可以用默认原型，也可以自定义多种原型来生成不同用途的 .md 文档。

@@ -9,17 +9,17 @@ date: 2025-09-21T10:00:00+08:00
 
 这里是我记录技术学习、项目开发和生活感悟的地方。
 
-### 技术栈
+### 关注点
 
-- 前端开发
-- 后端开发
-- 数据库
-- DevOps
+- 宏观：外汇、利率、贵金属、大宗商品
+- 个人：身体、精神、智力、社会/情感
+- 家庭：爱的源泉
+- 世界：积极探索
 
 ### 联系方式
 
-- GitHub: [你的GitHub](https://github.com/yourusername)
-- Email: your@email.com
+- GitHub: [你的GitHub](https://github.com/xiaouba)
+- Email: yangjw2011@foxmail.com
 
 ### 关于这个博客
 

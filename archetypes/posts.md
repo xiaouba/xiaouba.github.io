@@ -2,7 +2,7 @@
 title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
 draft: true
-author: "xiaouba"
+author: "小藕霸霸"
 categories: []
 tags: []
 description: ""
