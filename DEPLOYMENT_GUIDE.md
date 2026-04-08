@@ -26,7 +26,7 @@ hugo server -D
 hugo new posts/文章名.md
 ```
 
-Windows 也可以直接使用：
+PowerShell 下也可以用备用脚本：
 
 ```powershell
 .\new.ps1 文章名
@@ -42,9 +42,9 @@ Windows 也可以直接使用：
 
 推荐固定使用下面 4 步：
 
-```powershell
-.\publish.ps1 -Check -File "content/posts/文章名.md"
-.\publish.ps1 -File "content/posts/文章名.md"
+```bash
+./publish.sh --check --file "content/posts/文章名.md"
+./publish.sh --file "content/posts/文章名.md"
 git status
 git add <需要提交的文件>
 git commit -m "publish: 文章标题"
@@ -53,9 +53,9 @@ git push origin main
 
 说明：
 
-- `publish.ps1 -Check` 只检查文章 front matter
-- `publish.ps1 -File ...` 会检查并执行 `hugo --gc --minify`
-- Bash 环境可使用等价的 `publish.sh`
+- `publish.sh --check` 只检查文章 front matter
+- `publish.sh --file ...` 会检查并执行 `hugo --gc --minify`
+- `publish.ps1` 作为 PowerShell 备用入口保留
 - 两个脚本都不再自动 `git add`、`commit` 或 `push`
 - 如果本次同时改了 `hugo.yaml`、`layouts/`、`static/` 或工作流文件，必须手动一起提交
 

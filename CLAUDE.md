@@ -21,19 +21,15 @@ hugo --gc --minify
 # Create new post (generates from archetypes/posts.md template)
 hugo new posts/文章名.md
 
-# Windows check-only flow
-.\publish.ps1 -Check -File "content/posts/文章名.md"
-
-# Windows validate + build flow
-.\publish.ps1 -File "content/posts/文章名.md"
-
-# Check front matter only
+# Git Bash check-only flow
 ./publish.sh --check --file "content/posts/文章名.md"
 
-# Validate a post and run a local production build
+# Git Bash validate + build flow
 ./publish.sh --file "content/posts/文章名.md"
 
-# Windows helper for creating a post
+# PowerShell fallback
+.\publish.ps1 -Check -File "content/posts/文章名.md"
+.\publish.ps1 -File "content/posts/文章名.md"
 .\new.ps1 文章名
 ```
 
@@ -44,7 +40,7 @@ hugo new posts/文章名.md
 - **Archetypes**: `archetypes/posts.md` — template for `hugo new posts/...`, generates front matter with `draft: true`
 - **Theme**: PaperMod via git submodule — do not edit files in `themes/PaperMod/` directly
 - **CI/CD**: `.github/workflows/deploy-to-branch.yml` — on push to main, builds Hugo and deploys to `gh-pages` branch
-- **Publish scripts**: `publish.sh` and `publish.ps1` — validate post front matter and run a local production build; Git commits and pushes are manual
+- **Publish scripts**: `publish.sh` is the primary Git Bash workflow; `publish.ps1` is a Windows fallback. Both validate front matter and run a local production build; Git commits and pushes are manual
 
 ## Post Front Matter Requirements
 
@@ -56,9 +52,9 @@ Posts must have YAML front matter with at minimum: `title`, `date`, `draft`. The
 ## Publishing Workflow
 
 1. Create or edit content under `content/posts/`
-2. On Windows, run `.\publish.ps1 -Check -File "content/posts/文章名.md"` for a fast validation pass
-3. On Windows, run `.\publish.ps1 -File "content/posts/文章名.md"` before release
-4. On Bash environments, use the equivalent `./publish.sh` commands
+2. In Git Bash, run `./publish.sh --check --file "content/posts/文章名.md"` for a fast validation pass
+3. In Git Bash, run `./publish.sh --file "content/posts/文章名.md"` before release
+4. Use `publish.ps1` only when working in PowerShell
 5. Review `git status`, stage all required files, then commit and push manually
 
 ## Language

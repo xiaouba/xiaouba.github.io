@@ -28,7 +28,7 @@
 hugo new posts/my-new-post.md
 ```
 
-或在 PowerShell 中运行：
+在 PowerShell 中也可以用备用脚本：
 
 ```powershell
 .\new.ps1 我的新文章
@@ -38,9 +38,9 @@ hugo new posts/my-new-post.md
 
 推荐流程：
 
-```powershell
-.\publish.ps1 -Check -File "content/posts/文章名.md"
-.\publish.ps1 -File "content/posts/文章名.md"
+```bash
+./publish.sh --check --file "content/posts/文章名.md"
+./publish.sh --file "content/posts/文章名.md"
 git status
 git add <需要提交的文件>
 git commit -m "publish: 文章标题"

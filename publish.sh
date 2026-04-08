@@ -54,6 +54,89 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$REPO_ROOT"
 
 declare -a CHECK_FILES=()
+declare -a VALIDATION_ERRORS=()
+
+trim_value() {
+  local value="$1"
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+  value="${value%\"}"
+  value="${value#\"}"
+  value="${value%\'}"
+  value="${value#\'}"
+  printf '%s' "$value"
+}
+
+extract_front_matter_value() {
+  local file="$1"
+  local key="$2"
+
+  awk -v wanted_key="$key" '
+    BEGIN { in_front = 0 }
+    NR == 1 && $0 == "---" { in_front = 1; next }
+    in_front && $0 == "---" { exit }
+    in_front {
+      pos = index($0, ":")
+      if (pos > 0) {
+        current_key = substr($0, 1, pos - 1)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", current_key)
+        if (current_key == wanted_key) {
+          print substr($0, pos + 1)
+          exit
+        }
+      }
+    }
+  ' "$file"
+}
+
+validate_file() {
+  local file="$1"
+  local title draft raw_date date_epoch now_epoch
+
+  if ! head -n 1 "$file" | grep -qx -- '---'; then
+    VALIDATION_ERRORS+=("$file: 缺少 YAML front matter")
+    return
+  fi
+
+  if ! awk 'BEGIN { count = 0 } $0 == "---" { count++ } END { exit(count >= 2 ? 0 : 1) }' "$file"; then
+    VALIDATION_ERRORS+=("$file: front matter 格式不完整")
+    return
+  fi
+
+  title="$(trim_value "$(extract_front_matter_value "$file" "title")")"
+  draft="$(trim_value "$(extract_front_matter_value "$file" "draft")")"
+  raw_date="$(trim_value "$(extract_front_matter_value "$file" "date")")"
+
+  if [[ -z "$title" ]]; then
+    VALIDATION_ERRORS+=("$file: 缺少 title 字段")
+  fi
+
+  if [[ -z "$draft" ]]; then
+    VALIDATION_ERRORS+=("$file: 缺少 draft 字段")
+  else
+    case "${draft,,}" in
+      true|yes)
+        VALIDATION_ERRORS+=("$file: draft=true，不能发布")
+        ;;
+    esac
+  fi
+
+  if [[ -z "$raw_date" ]]; then
+    VALIDATION_ERRORS+=("$file: 缺少 date 字段")
+    return
+  fi
+
+  raw_date="${raw_date/Z/+00:00}"
+  if ! date_epoch="$(date -d "$raw_date" +%s 2>/dev/null)"; then
+    VALIDATION_ERRORS+=("$file: date 无法解析（$raw_date）")
+    return
+  fi
+
+  now_epoch="$(date +%s)"
+  if (( date_epoch > now_epoch )); then
+    VALIDATION_ERRORS+=("$file: date 是未来时间（$raw_date）")
+  fi
+}
 
 append_unique() {
   local item
@@ -95,74 +178,19 @@ for f in "${CHECK_FILES[@]}"; do
 done
 
 echo "==> 检查文章 front matter（title/date/draft）..."
-python3 - "${CHECK_FILES[@]}" <<'PY'
-from datetime import datetime
-from pathlib import Path
-import sys
+for f in "${CHECK_FILES[@]}"; do
+  validate_file "$f"
+done
 
-if len(sys.argv) <= 1:
-    print("没有收到待检查文件")
-    sys.exit(1)
+if [[ ${#VALIDATION_ERRORS[@]} -gt 0 ]]; then
+  printf '\n检查失败：\n'
+  for err in "${VALIDATION_ERRORS[@]}"; do
+    printf -- '- %s\n' "$err"
+  done
+  exit 2
+fi
 
-files = [Path(p) for p in sys.argv[1:]]
-errors = []
-now = datetime.now().astimezone()
-
-for file in files:
-    text = file.read_text(encoding="utf-8")
-    if not text.startswith("---"):
-        errors.append(f"{file}: 缺少 YAML front matter")
-        continue
-
-    parts = text.split("---", 2)
-    if len(parts) < 3:
-        errors.append(f"{file}: front matter 格式不完整")
-        continue
-
-    front = parts[1]
-    title = None
-    draft = None
-    date_value = None
-
-    for line in front.splitlines():
-        line = line.strip()
-        if line.startswith("title:"):
-            title = line.split(":", 1)[1].strip()
-        elif line.startswith("draft:"):
-            draft = line.split(":", 1)[1].strip().lower()
-        elif line.startswith("date:"):
-            date_value = line.split(":", 1)[1].strip()
-
-    if not title:
-        errors.append(f"{file}: 缺少 title 字段")
-
-    if draft in {None, ""}:
-        errors.append(f"{file}: 缺少 draft 字段")
-    elif draft in {"true", "yes"}:
-        errors.append(f"{file}: draft=true，不能发布")
-
-    if date_value:
-        raw = date_value.strip("'\"")
-        raw = raw.replace("Z", "+00:00")
-        try:
-            dt = datetime.fromisoformat(raw)
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=now.tzinfo)
-            if dt > now:
-                errors.append(f"{file}: date 是未来时间（{raw}）")
-        except ValueError:
-            errors.append(f"{file}: date 无法解析（{raw}）")
-    else:
-        errors.append(f"{file}: 缺少 date 字段")
-
-if errors:
-    print("\n检查失败：")
-    for item in errors:
-        print(f"- {item}")
-    sys.exit(2)
-
-print("front matter 检查通过。")
-PY
+echo "front matter 检查通过。"
 
 if [[ "$CHECK_ONLY" == "true" ]]; then
   echo "==> --check 模式：仅检查，不构建。"
