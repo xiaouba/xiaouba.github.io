@@ -21,14 +21,20 @@ hugo --gc --minify
 # Create new post (generates from archetypes/posts.md template)
 hugo new posts/文章名.md
 
-# Publish a post (checks front matter, builds, commits, pushes)
-./publish.sh --file "content/posts/文章名.md" "publish: 文章标题"
+# Windows check-only flow
+.\publish.ps1 -Check -File "content/posts/文章名.md"
 
-# Check front matter only (no build/commit)
+# Windows validate + build flow
+.\publish.ps1 -File "content/posts/文章名.md"
+
+# Check front matter only
 ./publish.sh --check --file "content/posts/文章名.md"
 
-# Publish without pushing to remote
-./publish.sh --no-push --file "content/posts/文章名.md" "publish: 文章标题"
+# Validate a post and run a local production build
+./publish.sh --file "content/posts/文章名.md"
+
+# Windows helper for creating a post
+.\new.ps1 文章名
 ```
 
 ## Architecture
@@ -38,7 +44,7 @@ hugo new posts/文章名.md
 - **Archetypes**: `archetypes/posts.md` — template for `hugo new posts/...`, generates front matter with `draft: true`
 - **Theme**: PaperMod via git submodule — do not edit files in `themes/PaperMod/` directly
 - **CI/CD**: `.github/workflows/deploy-to-branch.yml` — on push to main, builds Hugo and deploys to `gh-pages` branch
-- **Publish script**: `publish.sh` — validates front matter (draft status, date not in future), builds, commits, and pushes
+- **Publish scripts**: `publish.sh` and `publish.ps1` — validate post front matter and run a local production build; Git commits and pushes are manual
 
 ## Post Front Matter Requirements
 
@@ -46,6 +52,14 @@ Posts must have YAML front matter with at minimum: `title`, `date`, `draft`. The
 - `draft` must be `false` (not `true`) to publish
 - `date` must not be in the future
 - `date` must be parseable ISO format
+
+## Publishing Workflow
+
+1. Create or edit content under `content/posts/`
+2. On Windows, run `.\publish.ps1 -Check -File "content/posts/文章名.md"` for a fast validation pass
+3. On Windows, run `.\publish.ps1 -File "content/posts/文章名.md"` before release
+4. On Bash environments, use the equivalent `./publish.sh` commands
+5. Review `git status`, stage all required files, then commit and push manually
 
 ## Language
 

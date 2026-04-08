@@ -28,9 +28,26 @@
 hugo new posts/my-new-post.md
 ```
 
+或在 PowerShell 中运行：
+
+```powershell
+.\new.ps1 我的新文章
+```
+
 ## 部署
 
-推送到 main 分支后，GitHub Actions 会自动构建并部署到 GitHub Pages。
+推荐流程：
+
+```powershell
+.\publish.ps1 -Check -File "content/posts/文章名.md"
+.\publish.ps1 -File "content/posts/文章名.md"
+git status
+git add <需要提交的文件>
+git commit -m "publish: 文章标题"
+git push origin main
+```
+
+推送到 `main` 分支后，GitHub Actions 会自动构建并部署到 GitHub Pages。
 
 ## 许可证
 
