@@ -47,6 +47,16 @@ git commit -m "publish: 文章标题"
 git push origin main
 ```
 
+示例：
+
+```bash
+./publish.sh --check --file "content/posts/人生使命宣言.md"
+./publish.sh --file "content/posts/人生使命宣言.md"
+git add "content/posts/人生使命宣言.md"
+git commit -m "publish: 人生使命宣言"
+git push origin main
+```
+
 推送到 `main` 分支后，GitHub Actions 会自动构建并部署到 GitHub Pages。
 
 ## 许可证
