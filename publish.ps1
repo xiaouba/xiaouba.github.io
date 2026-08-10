@@ -43,20 +43,20 @@ function Get-CheckFiles {
         return $files
     }
 
-    git diff --name-only --diff-filter=AM -- 'content/posts/*.md' | ForEach-Object {
+    git -c core.quotepath=false diff --name-only --diff-filter=AM -- 'content/posts/*.md' | ForEach-Object {
         Add-UniqueFile -List $files -Path $_
     }
 
-    git diff --name-only --cached --diff-filter=AM -- 'content/posts/*.md' | ForEach-Object {
+    git -c core.quotepath=false diff --name-only --cached --diff-filter=AM -- 'content/posts/*.md' | ForEach-Object {
         Add-UniqueFile -List $files -Path $_
     }
 
-    git ls-files --others --exclude-standard -- 'content/posts/*.md' | ForEach-Object {
+    git -c core.quotepath=false ls-files --others --exclude-standard -- 'content/posts/*.md' | ForEach-Object {
         Add-UniqueFile -List $files -Path $_
     }
 
     if ($files.Count -eq 0) {
-        git ls-files -- 'content/posts/*.md' | ForEach-Object {
+        git -c core.quotepath=false ls-files -- 'content/posts/*.md' | ForEach-Object {
             Add-UniqueFile -List $files -Path $_
         }
     }

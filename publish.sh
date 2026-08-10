@@ -151,20 +151,20 @@ if [[ -n "$TARGET_FILE" ]]; then
 else
   while IFS= read -r f; do
     [[ -n "$f" ]] && append_unique "$f"
-  done < <(git diff --name-only --diff-filter=AM -- 'content/posts/*.md')
+  done < <(git -c core.quotepath=false diff --name-only --diff-filter=AM -- 'content/posts/*.md')
 
   while IFS= read -r f; do
     [[ -n "$f" ]] && append_unique "$f"
-  done < <(git diff --name-only --cached --diff-filter=AM -- 'content/posts/*.md')
+  done < <(git -c core.quotepath=false diff --name-only --cached --diff-filter=AM -- 'content/posts/*.md')
 
   while IFS= read -r f; do
     [[ -n "$f" ]] && append_unique "$f"
-  done < <(git ls-files --others --exclude-standard -- 'content/posts/*.md')
+  done < <(git -c core.quotepath=false ls-files --others --exclude-standard -- 'content/posts/*.md')
 
   if [[ ${#CHECK_FILES[@]} -eq 0 ]]; then
     while IFS= read -r f; do
       [[ -n "$f" ]] && append_unique "$f"
-    done < <(git ls-files -- 'content/posts/*.md')
+    done < <(git -c core.quotepath=false ls-files -- 'content/posts/*.md')
   fi
 fi
 
