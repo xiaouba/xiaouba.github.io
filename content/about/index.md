@@ -3,7 +3,7 @@ title: "关于我"
 date: 2025-09-21T10:00:00+08:00
 ---
 
-## 你好，我是 [你的名字]
+## 你好，我是 小藕霸霸
 
 欢迎来到我的个人博客！
 
@@ -18,7 +18,7 @@ date: 2025-09-21T10:00:00+08:00
 
 ### 联系方式
 
-- GitHub: [你的GitHub](https://github.com/xiaouba)
+- GitHub: [@xiaouba](https://github.com/xiaouba)
 - Email: yangjw2011@foxmail.com
 
 ### 关于这个博客

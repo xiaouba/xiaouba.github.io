@@ -14,7 +14,7 @@
 1. 安装 Hugo Extended 版本
 2. 克隆本仓库及子模块：
    ```bash
-   git clone --recurse-submodules https://github.com/yourusername/yourusername.github.io.git
+   git clone --recurse-submodules https://github.com/xiaouba/xiaouba.github.io.git
    ```
 3. 本地预览：
    ```bash
