@@ -1,0 +1,827 @@
+<title>Doom Emacs 博客发布手册</title>
+<style>
+  :root {
+    --bg: #F1F3F7;
+    --surface: #FFFFFF;
+    --surface-2: #F7F8FB;
+    --ink: #1C2029;
+    --ink-muted: #5B6270;
+    --ink-faint: #8991A3;
+    --border: #E0E3EA;
+    --accent: #D6336C;
+    --accent-2: #F2994A;
+    --code-bg: #1B1E27;
+    --code-ink: #E7E9EE;
+    --code-border: #2A2E3A;
+    --code-comment: #7C8398;
+    --shadow: 0 1px 2px rgba(28, 32, 41, 0.04), 0 6px 20px rgba(28, 32, 41, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161C;
+      --surface: #1B1E27;
+      --surface-2: #20232D;
+      --ink: #E8E9EE;
+      --ink-muted: #9BA1B0;
+      --ink-faint: #6E7385;
+      --border: #2B2F3B;
+      --accent: #FF6FA0;
+      --accent-2: #FFA75E;
+      --code-bg: #10121A;
+      --code-ink: #E7E9EE;
+      --code-border: #2E3240;
+      --code-comment: #6E7385;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14161C;
+    --surface: #1B1E27;
+    --surface-2: #20232D;
+    --ink: #E8E9EE;
+    --ink-muted: #9BA1B0;
+    --ink-faint: #6E7385;
+    --border: #2B2F3B;
+    --accent: #FF6FA0;
+    --accent-2: #FFA75E;
+    --code-bg: #10121A;
+    --code-ink: #E7E9EE;
+    --code-border: #2E3240;
+    --code-comment: #6E7385;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+      "Noto Sans SC", "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  code, .mono {
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+  }
+
+  /* ---------- Header ---------- */
+
+  header.masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    flex: none;
+  }
+
+  h1 {
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 1.9rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .subtitle {
+    color: var(--ink-muted);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .meta-chip {
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+  }
+
+  /* ---------- Prereqs ---------- */
+
+  .prereqs {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow);
+  }
+
+  .prereqs h2 {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+
+  .prereqs ul {
+    margin: 0;
+    padding-left: 1.1em;
+    color: var(--ink-muted);
+    font-size: 0.94rem;
+  }
+
+  .prereqs li + li { margin-top: 4px; }
+  .prereqs strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Pipeline ---------- */
+
+  ol.pipeline {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
+  }
+
+  li.step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    column-gap: 18px;
+    padding-bottom: 40px;
+  }
+
+  li.step:last-child { padding-bottom: 0; }
+
+  li.step::before {
+    content: "";
+    position: absolute;
+    left: 25px;
+    top: 46px;
+    bottom: -4px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  li.step:last-child::before { display: none; }
+
+  .step-num {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--surface);
+    background-image: linear-gradient(150deg, var(--accent), var(--accent-2));
+    box-shadow: var(--shadow);
+    z-index: 1;
+  }
+
+  .step-body h2 {
+    margin: 4px 0 4px;
+    font-size: 1.12rem;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .step-body .step-desc {
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+    margin: 0 0 14px;
+    max-width: 62ch;
+  }
+
+  .step-body .step-desc code {
+    font-size: 0.88em;
+  }
+
+  /* ---------- Terminal block ---------- */
+
+  .term-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .term {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1B1E27;
+    font-weight: 700;
+  }
+
+  .term pre {
+    margin: 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    color: var(--code-ink);
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 0.87rem;
+    line-height: 1.6;
+  }
+
+  .term .c { color: var(--code-comment); }
+
+  /* ---------- Doom callout ---------- */
+
+  .doom-tip {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 12px;
+    align-items: start;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+
+  .doom-tip .doom-label {
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  .doom-tip p { margin: 0; color: var(--ink-muted); }
+  .doom-tip p + p { margin-top: 6px; }
+
+  kbd {
+    font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular,
+      Menlo, Consolas, monospace;
+    font-size: 0.82em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: var(--ink);
+  }
+
+  /* ---------- Checklist card ---------- */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+  }
+
+  .card h2 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .card .card-note {
+    margin: 0 0 16px;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  ul.checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  ul.checklist li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 0.94rem;
+  }
+
+  ul.checklist .mark {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background-image: linear-gradient(150deg, var(--accent), var(--accent-2));
+    color: #1B1E27;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(1px);
+  }
+
+  ul.checklist code { font-size: 0.88em; color: var(--ink); }
+  ul.checklist span.note { color: var(--ink-muted); }
+
+  /* ---------- Reference table ---------- */
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 420px;
+    background: var(--surface);
+    font-size: 0.9rem;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--ink-muted);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  tbody td:first-child {
+    color: var(--ink);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tbody td code {
+    font-size: 0.85em;
+    color: var(--ink);
+  }
+
+  /* ---------- Note card (config-derived facts) ---------- */
+
+  .fact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow);
+  }
+
+  .fact-card h2 {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+
+  .fact-card ul {
+    margin: 0;
+    padding-left: 1.1em;
+    color: var(--ink-muted);
+    font-size: 0.92rem;
+  }
+
+  .fact-card li + li { margin-top: 6px; }
+  .fact-card strong { color: var(--ink); font-weight: 600; }
+  .fact-card code { font-size: 0.88em; }
+
+  /* ---------- Footer ---------- */
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  section h3.sub {
+    font-size: 0.98rem;
+    font-weight: 600;
+    margin: 22px 0 10px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  @media (max-width: 520px) {
+    li.step { grid-template-columns: 40px 1fr; column-gap: 12px; }
+    .step-num { width: 40px; height: 40px; font-size: 0.85rem; border-radius: 10px; }
+    li.step::before { left: 19px; top: 36px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">工作流程手册 · WSL 版</div>
+    <h1>Doom Emacs 博客发布手册</h1>
+    <p class="subtitle">小藕霸霸的烂笔头 · WSL Ubuntu + Hugo + Doom Emacs + Git</p>
+    <div class="meta-row">
+      <span class="meta-chip">仓库 ~/xiaouba.github.io（WSL: Ubuntu-E）</span>
+      <span class="meta-chip">主分支 main</span>
+      <span class="meta-chip">站点 https://xiaouba.github.io/</span>
+      <span class="meta-chip">更新于 2026-08-10</span>
+    </div>
+  </header>
+
+  <div class="prereqs">
+    <h2>前提条件（已在 WSL 里配好）</h2>
+    <ul>
+      <li>Hugo Extended v0.164.0 装在 <code>~/.local/bin/hugo</code>，已在 PATH 里。</li>
+      <li>仓库在 <code>~/xiaouba.github.io</code>，<code>origin</code> 用 SSH（<code>git@github.com:...</code>），<code>gh auth status</code> 已登录 <code>xiaouba</code>，push 不需要再输密码。</li>
+      <li><code>publish.sh</code> 已是可执行文件，且中文文件名的校验 bug 已修好。</li>
+      <li><code>:term vterm</code> 已在 <code>init.el</code> 里启用、跑过 <code>doom sync</code>，原生模块也实测编译并验证可用，整个流程可以不离开 Emacs。</li>
+      <li><code>config.el</code> 里给 <code>evil-emacs-state-map</code> 加了 <code>C-c SPC</code> → leader 的绑定，替代在 Windows Terminal 里不可用的 <code>M-SPC</code>，实测验证过。</li>
+    </ul>
+  </div>
+
+  <div class="fact-card">
+    <h2>你的 Doom 配置里跟这套流程有关的几件事</h2>
+    <ul>
+      <li>
+        <strong>不用切 Vim 模式：</strong>你在 <code>config.el</code> 里把
+        <code>evil-default-state</code> 设成了 <code>emacs</code>（注释写着"Key Configuration
+        as Vanilla Emacs"），所以正文编辑跟普通 Emacs 一样直接打字，不需要管 normal/insert。
+      </li>
+      <li>
+        <strong>Magit 用的是原生 Emacs 单键：</strong>你特意把
+        <code>magit-*-mode</code> / <code>git-commit-mode</code> 强制设回 emacs state，
+        注释里写明"use native Emacs keys (s/c/P/F…), not Vim"——下面第 6 步的键位就是这套。
+      </li>
+      <li>
+        <strong><code>:term vterm</code> 现在是开着的：</strong>之前 init.el 里 eshell / shell / term / vterm
+        全被注释掉，编辑和跑命令要分到两个窗口。现在已经把 <code>vterm</code> 取消注释、
+        <code>doom sync</code> 过，也实测编译了原生模块 —
+        下面的新建 / 预览 / 校验 / 构建都可以直接在弹出终端里跑，不用再切到 Emacs 外面。
+      </li>
+      <li>
+        <strong>leader key 是 <code>C-c SPC</code>，不是 <code>SPC</code> 也不是 <code>M-SPC</code>：</strong>
+        因为你的 buffer 基本都在 evil <code>emacs</code> state（前面这条），Doom 默认的 emacs-state
+        leader 是 <code>M-SPC</code>（Alt+Space）——但实测 <code>M-SPC</code> 在 Windows Terminal 里会
+        直接弹出系统窗口菜单（跟你 config.el 注释里描述的一样），根本到不了 Emacs。已经在
+        <code>config.el</code> 里给 <code>evil-emacs-state-map</code> 加了一条
+        <code>C-c SPC</code> → <code>doom-leader-map</code> 的绑定，实测过能正常触发
+        <code>+vterm/toggle</code>，下面统一用这个。普通 <code>SPC</code> 在正文里还是老老实实插入一个
+        空格（实测按 <code>SPC o t</code> 会把 "ot" 原样打进文章）；dashboard 那个 <code>SPC</code>
+        补丁没动，只在 dashboard 这一个 buffer 里生效，跟正文编辑无关。
+      </li>
+    </ul>
+  </div>
+
+  <ol class="pipeline">
+
+    <li class="step">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <h2>新建文章</h2>
+        <p class="step-desc">
+          在 Emacs 里的 vterm 终端中，从 <code>archetypes/posts.md</code> 模板生成新文章，自动写入
+          <code>draft: true</code> 的前言，文件落在 <code>content/posts/文章名.md</code>。
+        </p>
+        <div class="doom-tip">
+          <span class="doom-label">Doom · vterm</span>
+          <p>
+            先 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>p</kbd> <kbd>p</kbd> 切到 <code>xiaouba.github.io</code> 项目，
+            再 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 在项目根目录弹出终端。
+          </p>
+        </div>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>vterm（C-c SPC o t）</span></div>
+            <pre><span class="c"># 中文文件名可直接使用</span>
+hugo new posts/文章名.md</pre>
+          </div>
+        </div>
+        <div class="doom-tip">
+          <span class="doom-label">Doom</span>
+          <p>
+            命令跑完后 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 再按一次收起终端，
+            <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>f</kbd> <kbd>f</kbd> 直接按路径打开刚生成的文件。
+          </p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <h2>在 Doom Emacs 中撰写</h2>
+        <p class="step-desc">
+          打开文件后 <code>markdown-mode</code> 自动启用，直接打字即可（你的配置里这类 buffer
+          走 emacs state，不是 vim 模态）。先补全前言字段，再写正文；
+          发布前务必把 <code>draft</code> 从 <code>true</code> 改成 <code>false</code>。
+        </p>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>front matter</span></div>
+            <pre><span class="c">---</span>
+title: "文章标题"
+date: 2026-08-10T10:00:00+08:00
+draft: false          <span class="c"># 发布前必须改为 false</span>
+author: "小藕霸霸"
+categories: []
+tags: []
+description: ""
+<span class="c">---</span></pre>
+          </div>
+        </div>
+        <div class="doom-tip">
+          <span class="doom-label">Doom</span>
+          <p>
+            <kbd>C-x</kbd> <kbd>C-s</kbd> 保存；<kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>f</kbd> <kbd>f</kbd> 找其他文件；
+            记住 leader 是 <kbd>C-c</kbd> <kbd>SPC</kbd>，不是普通 <code>SPC</code>（会插入空格）
+            也不是 <code>M-SPC</code>（被 Windows Terminal 系统菜单吞掉），两个都实测验证过。
+          </p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <h2>本地预览</h2>
+        <p class="step-desc">
+          在同一个 vterm 里启动带草稿的本地服务器，浏览器打开
+          <code>http://localhost:1313</code>，内容改动会自动热重载。
+        </p>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>vterm（C-c SPC o t）</span></div>
+            <pre>hugo server -D</pre>
+          </div>
+        </div>
+        <div class="doom-tip">
+          <span class="doom-label">Doom · vterm</span>
+          <p>
+            <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 是<strong>切换显示/隐藏</strong>，不是新开一个——
+            服务器会一直在后台跑，回去写文章时按一下收起，想看日志或重启时再按一下叫出来，
+            同一个进程一直在，不用每次重启。
+          </p>
+          <p>
+            需要在当前窗口而不是弹出式小窗打开终端，用 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>T</kbd>（大写）。
+          </p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="step-num">04</div>
+      <div class="step-body">
+        <h2>发布前校验</h2>
+        <p class="step-desc">
+          只做检查、不构建，快速确认 <code>title</code> / <code>date</code> /
+          <code>draft</code> 三项是否合规（不写 <code>--file</code> 时会自动挑当前改动的文章）。
+        </p>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>vterm（C-c SPC o t）</span></div>
+            <pre>./publish.sh --check --file "content/posts/文章名.md"</pre>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="step-num">05</div>
+      <div class="step-body">
+        <h2>校验并本地构建</h2>
+        <p class="step-desc">
+          去掉 <code>--check</code>，通过校验后会额外跑一次
+          <code>hugo --gc --minify</code> 生产构建，确认没有报错。
+        </p>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>vterm（C-c SPC o t）</span></div>
+            <pre>./publish.sh --file "content/posts/文章名.md"</pre>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="step-num">06</div>
+      <div class="step-body">
+        <h2>用 Magit 提交并推送</h2>
+        <p class="step-desc">
+          <code>publish.sh</code> <strong>不会</strong>自动 <code>add</code> / <code>commit</code> /
+          <code>push</code>，这一步在 Emacs 里用 Magit 完成——因为 Magit buffer 是 emacs state，
+          下面全是它的原生按键，不是 evil 的。
+        </p>
+        <div class="doom-tip">
+          <span class="doom-label">Doom · Magit</span>
+          <p>
+            <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>g</kbd> <kbd>g</kbd> 打开 Magit 状态面板。
+          </p>
+          <p>
+            光标停在 <em>Unstaged changes</em> 下的文件上按 <kbd>s</kbd> 暂存
+            （整体暂存所有改动可以在文件列表标题上按 <kbd>s</kbd>）。
+          </p>
+          <p>
+            <kbd>c</kbd> <kbd>c</kbd> 打开提交信息 buffer，写 <code>publish: 文章标题</code>，
+            <kbd>C-c</kbd> <kbd>C-c</kbd> 确认提交。
+          </p>
+          <p>
+            <kbd>P</kbd> <kbd>p</kbd> 推送到 <code>origin/main</code>（首次没有上游分支会提示确认）。
+          </p>
+        </div>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>等价的命令行写法</span></div>
+            <pre>git status
+git add content/posts/文章名.md
+git commit -m "publish: 文章标题"
+git push origin main</pre>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="step-num">07</div>
+      <div class="step-body">
+        <h2>确认自动部署</h2>
+        <p class="step-desc">
+          推送到 <code>main</code> 会触发 <code>.github/workflows/deploy-to-branch.yml</code>：
+          Actions 里用 Hugo 构建，再推送到 <code>gh-pages</code> 分支。一两分钟后
+          <code>https://xiaouba.github.io/</code> 即可看到更新。
+        </p>
+        <div class="term-group">
+          <div class="term">
+            <div class="term-bar"><span>vterm（C-c SPC o t）· 用 gh 看进度</span></div>
+            <pre>gh run list --workflow deploy-to-branch.yml --limit 1</pre>
+          </div>
+        </div>
+      </div>
+    </li>
+
+  </ol>
+
+  <div class="card">
+    <h2>发布前检查清单</h2>
+    <p class="card-note">对应 publish.sh 的实际校验规则</p>
+    <ul class="checklist">
+      <li><span class="mark">✓</span><span><code>title</code> 字段非空</span></li>
+      <li><span class="mark">✓</span><span><code>draft</code> 已由 <code>true</code> 改为 <code>false</code></span></li>
+      <li><span class="mark">✓</span><span><code>date</code> 可解析，且不是未来时间</span></li>
+      <li><span class="mark">✓</span><span class="note">校验失败会中止，不会继续构建 —— 按提示信息定位到具体文件和字段</span></li>
+    </ul>
+  </div>
+
+  <section>
+    <h3 class="sub">命令速查</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>动作</th><th>命令（Emacs vterm，C-c SPC o t）</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>新建文章</td>
+            <td><code>hugo new posts/文章名.md</code></td>
+          </tr>
+          <tr>
+            <td>本地预览（含草稿）</td>
+            <td><code>hugo server -D</code></td>
+          </tr>
+          <tr>
+            <td>仅校验</td>
+            <td><code>./publish.sh --check --file "路径"</code></td>
+          </tr>
+          <tr>
+            <td>校验 + 构建</td>
+            <td><code>./publish.sh --file "路径"</code></td>
+          </tr>
+          <tr>
+            <td>生产构建</td>
+            <td><code>hugo --gc --minify</code></td>
+          </tr>
+          <tr>
+            <td>提交推送</td>
+            <td><code>git add … && git commit -m "…" && git push origin main</code></td>
+          </tr>
+          <tr>
+            <td>查看部署状态</td>
+            <td><code>gh run list --workflow deploy-to-branch.yml --limit 1</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap" style="margin-top: 12px;">
+      <table>
+        <thead>
+          <tr><th>Emacs 内切换</th><th>按键</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>项目终端 显示/隐藏</td>
+            <td><kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd></td>
+          </tr>
+          <tr>
+            <td>终端占满当前窗口</td>
+            <td><kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>T</kbd></td>
+          </tr>
+          <tr>
+            <td>Magit 状态面板</td>
+            <td><kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>g</kbd> <kbd>g</kbd></td>
+          </tr>
+          <tr>
+            <td>找文件 / 切项目</td>
+            <td><kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>f</kbd> <kbd>f</kbd> / <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>p</kbd> <kbd>p</kbd></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>依据 ~/xiaouba.github.io（publish.sh / CLAUDE.md）与 ~/.config/doom 实际配置核实</span>
+    <span><code>init.el</code> 已启用 <code>:term vterm</code>，<code>config.el</code> 加了 <code>C-c SPC</code> leader 绑定，均已 doom sync + 实测；Windows 端 publish.ps1 / new.ps1 仍在仓库里作为旧机器备用</span>
+  </footer>
+
+</div>
