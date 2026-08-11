@@ -1,5 +1,5 @@
 baseURL: 'https://xiaouba.github.io/'
-languageCode: 'zh-cn'
+locale: 'zh-cn'
 title: '小藕霸霸的烂笔头'
 theme: 'PaperMod'  # 使用 PaperMod 主题
 
