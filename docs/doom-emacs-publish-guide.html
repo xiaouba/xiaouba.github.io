@@ -551,6 +551,16 @@
         空格（实测按 <code>SPC o t</code> 会把 "ot" 原样打进文章）；dashboard 那个 <code>SPC</code>
         补丁没动，只在 dashboard 这一个 buffer 里生效，跟正文编辑无关。
       </li>
+      <li>
+        <strong>vterm 里面 <code>C-c SPC</code> 不管用：</strong>vterm 在 insert state 下几乎所有按键
+        都是<strong>原样转发给终端</strong>的，不经过 Emacs 的按键分发——实测在 vterm 里按
+        <code>C-c SPC o t</code> 想收起终端，结果 <code>C-c</code> 变成了真正发给 shell 的
+        <strong>Ctrl-C 中断信号</strong>，后面的 " o t" 也被当文字敲进了命令行。正确做法：先按
+        <kbd>Esc</kbd> 把 vterm 切到 evil <em>normal state</em>，这时候用<strong>普通</strong>
+        <code>SPC o t</code>（不是 <code>C-c SPC</code>）就能收起终端——normal state 下 Doom 原生的
+        leader 本来就是 <code>SPC</code>，从来没被 Windows Terminal 吃过，只有 emacs state 下的
+        <code>M-SPC</code> 才有问题。实测验证过。
+      </li>
     </ul>
   </div>
 
@@ -570,6 +580,12 @@
             先 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>p</kbd> <kbd>p</kbd> 切到 <code>xiaouba.github.io</code> 项目，
             再 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 在项目根目录弹出终端。
           </p>
+          <p>
+            <strong>打不出字（尤其是 h/j/k/l）？</strong> 说明 vterm buffer 掉进了 evil
+            <em>normal state</em>（通常是不小心按了 <kbd>Esc</kbd> 触发的，这是 Doom vterm
+            的正常设计，用来在终端里滚动/复制）——按 <kbd>i</kbd> 切回 <em>insert state</em>
+            就能继续打字，实测验证过。
+          </p>
         </div>
         <div class="term-group">
           <div class="term">
@@ -581,8 +597,11 @@ hugo new posts/文章名.md</pre>
         <div class="doom-tip">
           <span class="doom-label">Doom</span>
           <p>
-            命令跑完后 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 再按一次收起终端，
-            <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>f</kbd> <kbd>f</kbd> 直接按路径打开刚生成的文件。
+            命令跑完后<strong>先按</strong> <kbd>Esc</kbd>（切到 vterm 的 normal state），再按
+            <strong>普通</strong> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 收起终端 ——
+            <strong>不要</strong>在 vterm 里直接按 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd>，
+            那个 <kbd>C-c</kbd> 会被当成 Ctrl-C 中断信号发给 shell。
+            回到正文后用 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>f</kbd> <kbd>f</kbd> 打开刚生成的文件。
           </p>
         </div>
       </div>
@@ -639,12 +658,20 @@ description: ""
         <div class="doom-tip">
           <span class="doom-label">Doom · vterm</span>
           <p>
-            <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 是<strong>切换显示/隐藏</strong>，不是新开一个——
-            服务器会一直在后台跑，回去写文章时按一下收起，想看日志或重启时再按一下叫出来，
-            同一个进程一直在，不用每次重启。
+            <code>+vterm/toggle</code> 是<strong>切换显示/隐藏</strong>，不是新开一个——服务器会
+            一直在后台跑，同一个进程不用每次重启。但<strong>触发方式因你所在的位置而不同</strong>：
           </p>
           <p>
-            需要在当前窗口而不是弹出式小窗打开终端，用 <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>T</kbd>（大写）。
+            · 在正文 buffer 里（还没打开终端）：<kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd> 弹出。
+          </p>
+          <p>
+            · 已经在 vterm 里、想收起它：先 <kbd>Esc</kbd> 切到 normal state，再按普通
+            <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd>（不带 <kbd>C-c</kbd>，否则会把 Ctrl-C 发给
+            正在跑的 <code>hugo server</code>）。
+          </p>
+          <p>
+            需要在当前窗口而不是弹出式小窗打开终端，同样按位置分别用
+            <kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>T</kbd> 或 <kbd>SPC</kbd> <kbd>o</kbd> <kbd>T</kbd>（大写）。
           </p>
         </div>
       </div>
@@ -799,8 +826,12 @@ git push origin main</pre>
         </thead>
         <tbody>
           <tr>
-            <td>项目终端 显示/隐藏</td>
+            <td>项目终端 显示/隐藏（在正文里按）</td>
             <td><kbd>C-c</kbd> <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd></td>
+          </tr>
+          <tr>
+            <td>项目终端 显示/隐藏（已经在 vterm 里）</td>
+            <td><kbd>Esc</kbd> 然后 <kbd>SPC</kbd> <kbd>o</kbd> <kbd>t</kbd>（不带 C-c）</td>
           </tr>
           <tr>
             <td>终端占满当前窗口</td>
